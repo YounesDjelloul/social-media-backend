@@ -7,6 +7,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from account.models import User
 from .models import *
+from .operations import CreatePushNotification
 
 # Create your views here.
 
@@ -104,13 +105,6 @@ class CreateLikeView(APIView):
 		post = Post.objects.get(id=data['post'])
 		Like.objects.create(post=post, user=user)
 
-		# Creating a notification
-		Notification.objects.create(noti_type='like', from_user=user, to_user=post.user)
+		CreatePushNotification(from_user=user, to_user=post.user, noti_type='like')
 
-		# pushing the notification
-		if NotificationListener.objects.filter(user=post.user).exists():
-			notification_listener = NotificationListener.objects.filter(user=post.user)[0]
-			message_inner = {"noti_type": "like","from_user": user.username,"to_user": post.user.username}
-			notification_listener.push_notification(message_inner=message_inner)
-
-		return Response('Like Added Successfully', status=201)	
+		return Response('Like Added Successfully', status=201)

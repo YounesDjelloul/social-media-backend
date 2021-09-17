@@ -45,15 +45,16 @@ class Notification(models.Model):
 
 	noti_types = {
 
-		('like', 'like')
+		('like', 'like'),
+		('request', 'request')
 	}
 
 	noti_type = models.CharField(max_length=100)
-	from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_user')
-	to_user   = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_user')
+	sender    = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notification_sender')
+	receiver  = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notification_receiver')
 
 	def __str__(self):
-		return str(self.from_user)
+		return str(self.sender)
 
 	def push_notification(self, notification_group_name, message_inner):
 
